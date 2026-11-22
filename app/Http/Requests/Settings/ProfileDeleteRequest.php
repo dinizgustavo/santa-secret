@@ -3,10 +3,12 @@
 namespace App\Http\Requests\Settings;
 
 use App\Concerns\PasswordValidationRules;
+use App\Models\Group;
 use App\Models\User;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class ProfileDeleteRequest extends FormRequest
 {
@@ -29,6 +31,36 @@ class ProfileDeleteRequest extends FormRequest
 
         return [
             'password' => $this->currentPasswordRules(),
+        ];
+    }
+
+    /**
+     * Deleting an account that is part of a finished draw would silently break someone else's match.
+     *
+     * @return array<int, callable(Validator): void>
+     */
+    public function after(): array
+    {
+        return [
+            function (Validator $validator): void {
+                $user = $this->user();
+
+                if (! $user instanceof User) {
+                    return;
+                }
+
+                $drawnGroup = Group::query()
+                    ->whereNotNull('drawn_at')
+                    ->whereHas('participants', fn ($query) => $query->where('user_id', $user->id))
+                    ->first();
+
+                if ($drawnGroup !== null) {
+                    $validator->errors()->add(
+                        $user->hasPassword() ? 'password' : 'confirmation',
+                        __('groups.errors.in_drawn_group', ['group' => $drawnGroup->name]),
+                    );
+                }
+            },
         ];
     }
 
