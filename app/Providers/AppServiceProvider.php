@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Support\I18n\FrontendTranslations;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
@@ -15,7 +17,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(FrontendTranslations::class, fn (): FrontendTranslations => new FrontendTranslations(lang_path()));
     }
 
     /**
@@ -33,16 +35,18 @@ class AppServiceProvider extends ServiceProvider
     {
         Date::use(CarbonImmutable::class);
 
+        // Outside production, fail loudly on lazy loading (N+1), unknown attributes and silently discarded fills.
+        Model::shouldBeStrict(! $this->app->isProduction());
+
         DB::prohibitDestructiveCommands(
-            app()->isProduction(),
+            $this->app->isProduction(),
         );
 
-        Password::defaults(fn (): ?Password => app()->isProduction()
-            ? Password::min(12)
-                ->mixedCase()
+        // Friends sign up from their phones, so keep the rule reasonable but still reject leaked passwords.
+        Password::defaults(fn (): ?Password => $this->app->isProduction()
+            ? Password::min(8)
                 ->letters()
                 ->numbers()
-                ->symbols()
                 ->uncompromised()
             : null,
         );
