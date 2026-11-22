@@ -30,6 +30,16 @@
             }
         </style>
 
+        {{-- Link previews (WhatsApp, Telegram...). Generic on purpose: no group data is exposed to crawlers. --}}
+        <meta name="description" content="{{ __('ui/welcome.description') }}">
+        <meta property="og:type" content="website">
+        <meta property="og:site_name" content="{{ __('ui/common.app_name') }}">
+        <meta property="og:title" content="{{ __('ui/welcome.title') }}">
+        <meta property="og:description" content="{{ __('ui/welcome.description') }}">
+        <meta property="og:locale" content="{{ app()->getLocale() }}">
+        <meta property="og:image" content="{{ url('/apple-touch-icon.png') }}">
+        <meta name="theme-color" content="#0a0a0a">
+
         <link rel="icon" href="/favicon.ico" sizes="any">
         <link rel="icon" href="/favicon.svg" type="image/svg+xml">
         <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -39,7 +49,7 @@
         @viteReactRefresh
         @vite(['resources/css/app.css', 'resources/js/app.tsx', "resources/js/pages/{$page['component']}.tsx"])
         <x-inertia::head>
-            <title>{{ config('app.name', 'Laravel') }}</title>
+            <title>{{ __('ui/common.app_name') }}</title>
         </x-inertia::head>
     </head>
     <body class="font-sans antialiased">
