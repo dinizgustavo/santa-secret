@@ -1,3 +1,4 @@
+import type { LocaleInfo, Translations } from '@/lib/i18n';
 import type { Auth } from '@/types/auth';
 
 declare module 'react' {
@@ -11,6 +12,8 @@ declare module '@inertiajs/core' {
         sharedPageProps: {
             name: string;
             auth: Auth;
+            locale: LocaleInfo;
+            translations: Translations;
             sidebarOpen: boolean;
             [key: string]: unknown;
         };

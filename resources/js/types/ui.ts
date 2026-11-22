@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import type { BreadcrumbItem } from '@/types/navigation';
+import type { TranslationKey } from '@/types/translation-keys';
 
 export type AppLayoutProps = {
     children: ReactNode;
@@ -16,6 +17,6 @@ export type FlashToast = {
 export type AuthLayoutProps = {
     children?: ReactNode;
     name?: string;
-    title?: string;
-    description?: string;
+    title?: TranslationKey;
+    description?: TranslationKey;
 };
