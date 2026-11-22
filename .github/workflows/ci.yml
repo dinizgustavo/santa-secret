@@ -1,0 +1,122 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PHP_VERSION: '8.4'
+  NODE_VERSION: '22'
+
+jobs:
+  backend:
+    name: Backend (Pint, Larastan, Pest)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: testing
+          POSTGRES_USER: sail
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U sail -d testing"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: testing
+      DB_USERNAME: sail
+      DB_PASSWORD: password
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: pdo_pgsql, intl, bcmath
+          tools: composer:v2
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Prepare environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Pint
+        run: vendor/bin/pint --test
+
+      - name: Larastan
+        run: vendor/bin/phpstan analyse --no-progress --memory-limit=1G
+
+      - name: Pest
+        run: php artisan test
+
+  frontend:
+    name: Frontend (lint, types, build)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Wayfinder generates typed route helpers from the Laravel routes, so the build needs PHP.
+      - name: Setup PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: pdo_pgsql, intl, bcmath
+          tools: composer:v2
+          coverage: none
+
+      - name: Setup Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Prepare environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Production build (also generates Wayfinder routes)
+        run: npm run build
+
+      - name: Lint and format (Oxlint + Oxfmt via Vite+)
+        run: npm run check
+
+      - name: Type check
+        run: npm run types:check
