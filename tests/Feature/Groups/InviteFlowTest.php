@@ -46,7 +46,8 @@ test('accepting the invite joins the group', function () {
 test('joining twice is harmless and members are sent to the group page', function () {
     [$group, , [$member]] = groupWithMembers(1);
 
-    $this->actingAs($member)->post(route('invites.accept', $group->invite_token));
+    $this->actingAs($member)->post(route('invites.accept', $group->invite_token))
+        ->assertInertiaFlashMissing('toast');
     $this->actingAs($member)->get(route('invites.show', $group->invite_token))->assertRedirect(route('groups.show', $group));
 
     expect($group->participants()->count())->toBe(2);

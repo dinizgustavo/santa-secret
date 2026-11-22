@@ -87,6 +87,8 @@ class FortifyServiceProvider extends ServiceProvider
         // Sending codes costs e-mails: limit per address and per IP.
         RateLimiter::for('login-code-send', fn (Request $request): array => [
             Limit::perMinute(3)->by('email|'.$request->string('email')->lower()->toString()),
+            // IPs can be rotated, so the address itself also gets an hourly budget.
+            Limit::perHour(5)->by('email-hour|'.$request->string('email')->lower()->toString()),
             Limit::perHour(10)->by('ip|'.$request->ip()),
         ]);
 

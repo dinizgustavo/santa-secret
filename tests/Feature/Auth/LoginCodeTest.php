@@ -1,5 +1,6 @@
 <?php
 
+use App\Actions\Auth\VerifyLoginCode;
 use App\Enums\Locale;
 use App\Http\Middleware\SetLocale;
 use App\Models\LoginCode;
@@ -167,6 +168,39 @@ test('requesting a new code invalidates the previous one', function () {
 
     $this->post(route('login-code.verify'), ['code' => $second]);
     $this->assertAuthenticated();
+});
+
+test('wrong codes are capped per address across new codes', function () {
+    $code = requestLoginCode('ana@example.com');
+    $wrong = $code === '000000' ? '111111' : '000000';
+
+    foreach (range(1, VerifyLoginCode::MAX_FAILURES_PER_HOUR) as $ignored) {
+        LoginCode::query()->update(['attempts' => 0]); // as if a fresh code had been requested
+        $this->post(route('login-code.verify'), ['code' => $wrong])->assertSessionHasErrors('code');
+    }
+
+    // Even the right code is refused now, until the hour passes.
+    $this->post(route('login-code.verify'), ['code' => $code])->assertSessionHasErrors('code');
+    $this->assertGuest();
+});
+
+test('an address can only receive a few codes per hour', function () {
+    foreach (range(1, 5) as $minute) {
+        $this->travel(1)->minutes();
+        $this->post(route('login-code.store'), ['email' => 'ana@example.com'])->assertRedirect();
+    }
+
+    $this->travel(1)->minutes();
+    $this->post(route('login-code.store'), ['email' => 'ana@example.com'])->assertTooManyRequests();
+});
+
+test('old codes are cleaned up when new ones are sent', function () {
+    requestLoginCode('old@example.com');
+    LoginCode::query()->update(['expires_at' => now()->subDays(2), 'consumed_at' => now()->subDays(2)]);
+
+    requestLoginCode('new@example.com');
+
+    expect(LoginCode::query()->pluck('email')->all())->toBe(['new@example.com']);
 });
 
 test('the verify page needs an e-mail in the session', function () {

@@ -45,9 +45,12 @@ class InvitationController extends Controller
     {
         $group = $this->groupFor($token);
 
-        $joinGroup->handle($group, $user);
+        $membership = $joinGroup->handle($group, $user);
 
-        Inertia::flash('toast', ['type' => 'success', 'message' => __('groups.flash.joined', ['group' => $group->name])]);
+        // A double tap on "Join" lands here twice; only the first one actually joins.
+        if ($membership->wasRecentlyCreated) {
+            Inertia::flash('toast', ['type' => 'success', 'message' => __('groups.flash.joined', ['group' => $group->name])]);
+        }
 
         return to_route('groups.show', $group);
     }

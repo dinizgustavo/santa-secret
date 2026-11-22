@@ -4,6 +4,7 @@ namespace App\Actions\Auth;
 
 use App\Enums\Locale;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /**
@@ -32,7 +33,16 @@ final class FindOrCreateVerifiedUser
         $changes = [];
 
         if ($user->email_verified_at === null) {
+            // Nobody had proven they own this address until now: e.g. someone registered (or changed
+            // their profile e-mail to) it with a password of their choosing. The real owner is taking
+            // it over, so whatever credentials and sessions that person set up must stop working.
             $changes['email_verified_at'] = now();
+            $changes['password'] = null;
+            $changes['remember_token'] = Str::random(60);
+
+            if (config('session.driver') === 'database') {
+                DB::table(config()->string('session.table', 'sessions'))->where('user_id', $user->id)->delete();
+            }
         }
 
         if ($googleId !== null && $user->google_id === null) {
