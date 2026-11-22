@@ -18,7 +18,9 @@ return new class extends Migration
             // Null means "no saved preference": fall back to session / Accept-Language.
             $table->string('locale', 10)->nullable();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            // Null for people who only sign in with Google or an e-mailed code.
+            $table->string('password')->nullable();
+            $table->string('google_id')->nullable()->unique();
             $table->rememberToken();
             $table->timestamps();
         });

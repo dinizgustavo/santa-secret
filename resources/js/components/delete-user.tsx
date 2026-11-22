@@ -1,4 +1,4 @@
-import { Form } from '@inertiajs/react';
+import { Form, usePage } from '@inertiajs/react';
 import { useRef } from 'react';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import Heading from '@/components/heading';
@@ -14,12 +14,15 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useTranslation } from '@/lib/i18n';
 
 export default function DeleteUser() {
     const passwordInput = useRef<HTMLInputElement>(null);
     const { t } = useTranslation();
+    const user = usePage().props.auth.user;
+    const hasPassword = user?.has_password ?? true;
 
     return (
         <div className="space-y-6">
@@ -52,7 +55,11 @@ export default function DeleteUser() {
                             {t('settings.delete_account.dialog_title')}
                         </DialogTitle>
                         <DialogDescription>
-                            {t('settings.delete_account.dialog_description')}
+                            {t(
+                                hasPassword
+                                    ? 'settings.delete_account.dialog_description'
+                                    : 'settings.delete_account.dialog_description_passwordless',
+                            )}
                         </DialogDescription>
 
                         <Form
@@ -66,26 +73,52 @@ export default function DeleteUser() {
                         >
                             {({ resetAndClearErrors, processing, errors }) => (
                                 <>
-                                    <div className="grid gap-2">
-                                        <Label
-                                            htmlFor="password"
-                                            className="sr-only"
-                                        >
-                                            {t('common.fields.password')}
-                                        </Label>
+                                    {hasPassword ? (
+                                        <div className="grid gap-2">
+                                            <Label
+                                                htmlFor="password"
+                                                className="sr-only"
+                                            >
+                                                {t('common.fields.password')}
+                                            </Label>
 
-                                        <PasswordInput
-                                            id="password"
-                                            name="password"
-                                            ref={passwordInput}
-                                            placeholder={t(
-                                                'common.fields.password',
-                                            )}
-                                            autoComplete="current-password"
-                                        />
+                                            <PasswordInput
+                                                id="password"
+                                                name="password"
+                                                ref={passwordInput}
+                                                placeholder={t(
+                                                    'common.fields.password',
+                                                )}
+                                                autoComplete="current-password"
+                                            />
 
-                                        <InputError message={errors.password} />
-                                    </div>
+                                            <InputError
+                                                message={errors.password}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <div className="grid gap-2">
+                                            <Label
+                                                htmlFor="confirmation"
+                                                className="sr-only"
+                                            >
+                                                {t('common.fields.email')}
+                                            </Label>
+
+                                            <Input
+                                                id="confirmation"
+                                                name="confirmation"
+                                                type="email"
+                                                ref={passwordInput}
+                                                placeholder={user?.email}
+                                                autoComplete="off"
+                                            />
+
+                                            <InputError
+                                                message={errors.confirmation}
+                                            />
+                                        </div>
+                                    )}
 
                                     <DialogFooter className="gap-2">
                                         <DialogClose asChild>

@@ -55,6 +55,7 @@ class HandleInertiaRequests extends Middleware
                     'name' => $user->name,
                     'email' => $user->email,
                     'email_verified_at' => $user->email_verified_at?->toIso8601String(),
+                    'has_password' => $user->hasPassword(),
                 ] : null,
             ],
             'locale' => [

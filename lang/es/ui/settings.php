@@ -21,11 +21,14 @@ return [
         'button' => 'Eliminar cuenta',
         'dialog_title' => '¿Seguro que quieres eliminar tu cuenta?',
         'dialog_description' => 'Cuando se elimine tu cuenta, todos sus datos se borrarán de forma permanente. Introduce tu contraseña para confirmar.',
+        'dialog_description_passwordless' => 'Cuando se elimine tu cuenta, todos sus datos se borrarán de forma permanente. Escribe tu correo para confirmar.',
     ],
     'security' => [
         'head' => 'Configuración de seguridad',
         'title' => 'Cambiar contraseña',
         'description' => 'Usa una contraseña larga y aleatoria para mantener tu cuenta segura',
+        'set_title' => 'Crear una contraseña',
+        'set_description' => 'Inicias sesión con Google o con un código por correo. Crea una contraseña si también quieres usarla.',
     ],
     'appearance' => [
         'head' => 'Configuración de apariencia',

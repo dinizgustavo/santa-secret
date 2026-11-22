@@ -21,11 +21,14 @@ return [
         'button' => 'Excluir conta',
         'dialog_title' => 'Tem certeza de que deseja excluir sua conta?',
         'dialog_description' => 'Depois que sua conta for excluída, todos os seus dados serão apagados permanentemente. Digite sua senha para confirmar.',
+        'dialog_description_passwordless' => 'Depois que sua conta for excluída, todos os seus dados serão apagados permanentemente. Digite seu e-mail para confirmar.',
     ],
     'security' => [
         'head' => 'Configurações de segurança',
         'title' => 'Alterar senha',
         'description' => 'Use uma senha longa e aleatória para manter sua conta segura',
+        'set_title' => 'Criar uma senha',
+        'set_description' => 'Você entra com o Google ou com um código por e-mail. Crie uma senha se também quiser entrar com ela.',
     ],
     'appearance' => [
         'head' => 'Configurações de aparência',

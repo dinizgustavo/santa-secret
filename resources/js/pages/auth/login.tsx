@@ -1,6 +1,7 @@
 import { Form, Head } from '@inertiajs/react';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
+import SignInOptions from '@/components/sign-in-options';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -11,19 +12,29 @@ import { useTranslation } from '@/lib/i18n';
 import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
-import type { AuthLayoutProps } from '@/types';
+import type {
+    AuthLayoutProps,
+    SignInOptions as SignInOptionsType,
+} from '@/types';
 
 type Props = {
     status?: string;
     canResetPassword: boolean;
+    signInOptions: SignInOptionsType;
 };
 
-export default function Login({ status, canResetPassword }: Props) {
+export default function Login({
+    status,
+    canResetPassword,
+    signInOptions,
+}: Props) {
     const { t } = useTranslation();
 
     return (
         <>
             <Head title={t('auth.login.head')} />
+
+            <SignInOptions options={signInOptions} />
 
             <Form
                 {...store.form()}

@@ -30,8 +30,19 @@ class UserFactory extends Factory
             'locale' => null,
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
+            'google_id' => null,
             'remember_token' => Str::random(10),
         ];
+    }
+
+    /**
+     * An account created through Google or an e-mailed code, with no password set.
+     */
+    public function passwordless(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'password' => null,
+        ]);
     }
 
     /**

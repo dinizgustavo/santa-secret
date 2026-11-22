@@ -9,6 +9,7 @@ export default function AuthSimpleLayout({
     children,
     title,
     description,
+    descriptionParams,
 }: AuthLayoutProps) {
     const { t } = useTranslation();
     const heading = title ? t(title) : '';
@@ -35,7 +36,7 @@ export default function AuthSimpleLayout({
                             <h1 className="text-xl font-medium">{heading}</h1>
                             {description && (
                                 <p className="text-center text-sm text-muted-foreground">
-                                    {t(description)}
+                                    {t(description, descriptionParams)}
                                 </p>
                             )}
                         </div>

@@ -1,6 +1,7 @@
 import { Form, Head } from '@inertiajs/react';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
+import SignInOptions from '@/components/sign-in-options';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,18 +10,23 @@ import { Spinner } from '@/components/ui/spinner';
 import { useTranslation } from '@/lib/i18n';
 import { login } from '@/routes';
 import { store } from '@/routes/register';
-import type { AuthLayoutProps } from '@/types';
+import type {
+    AuthLayoutProps,
+    SignInOptions as SignInOptionsType,
+} from '@/types';
 
 type Props = {
     passwordRules: string;
+    signInOptions: SignInOptionsType;
 };
 
-export default function Register({ passwordRules }: Props) {
+export default function Register({ passwordRules, signInOptions }: Props) {
     const { t } = useTranslation();
 
     return (
         <>
             <Head title={t('auth.register.head')} />
+            <SignInOptions options={signInOptions} />
             <Form
                 {...store.form()}
                 resetOnSuccess={['password', 'password_confirmation']}
