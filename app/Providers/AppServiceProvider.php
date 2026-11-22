@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use Random\Randomizer;
@@ -36,6 +37,12 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
         $this->configureRateLimiting();
+
+        // Behind a TLS-terminating proxy, also generate https URLs when APP_URL says so
+        // (covers requests that arrive without X-Forwarded-Proto, such as health checks).
+        if (str_starts_with(config()->string('app.url'), 'https://')) {
+            URL::forceScheme('https');
+        }
     }
 
     /**

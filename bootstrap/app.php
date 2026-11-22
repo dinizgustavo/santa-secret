@@ -20,6 +20,10 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
 
+        // Render (and most PaaS) terminate HTTPS at a load balancer whose address is not fixed:
+        // trust its X-Forwarded-* headers so URLs, redirects and secure cookies use https.
+        $middleware->trustProxies(at: '*');
+
         $middleware->web(append: [
             SetLocale::class,
             HandleAppearance::class,
