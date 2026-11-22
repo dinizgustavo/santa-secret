@@ -26,6 +26,9 @@ final class SendLoginCode
             // Only the newest code is valid.
             LoginCode::query()->where('email', $email)->whereNull('consumed_at')->delete();
 
+            // No scheduler on free hosting: housekeeping happens here instead.
+            LoginCode::query()->where('expires_at', '<', now()->subDay())->delete();
+
             LoginCode::query()->create([
                 'email' => $email,
                 'code_hash' => LoginCode::hashFor($email, $code),

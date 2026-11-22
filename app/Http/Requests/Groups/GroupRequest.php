@@ -23,7 +23,9 @@ class GroupRequest extends FormRequest
             // Typed in major units ("50" or "49.90"); stored in cents.
             'budget_max' => ['nullable', 'numeric', 'decimal:0,2', 'min:1', 'max:100000'],
             'budget_currency' => ['nullable', 'required_with:budget_max', Rule::enum(Currency::class)],
-            'event_date' => ['required', 'date_format:Y-m-d', $this->isMethod('post') ? 'after_or_equal:today' : 'date'],
+            // The server runs in UTC while people are spread across time zones (Brazil is UTC-3),
+            // so "today" for them can already be "yesterday" here: allow one day of slack.
+            'event_date' => ['required', 'date_format:Y-m-d', $this->isMethod('post') ? 'after_or_equal:yesterday' : 'date'],
         ];
     }
 

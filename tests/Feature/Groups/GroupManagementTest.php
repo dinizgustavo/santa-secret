@@ -29,6 +29,15 @@ test('a user creates a group and becomes its organizer', function () {
         ->and($group->participants()->sole()->only(['user_id', 'role']))->toBe(['user_id' => $user->id, 'role' => ParticipantRole::Organizer]);
 });
 
+test('today in a time zone behind UTC is still accepted', function () {
+    // 01:00 UTC on Dec 2 is still Dec 1 in Brazil (UTC-3).
+    $this->travelTo(now()->setDate(2026, 12, 2)->setTime(1, 0));
+
+    $this->actingAs(User::factory()->create())
+        ->post(route('groups.store'), ['name' => 'Hoje', 'event_date' => '2026-12-01'])
+        ->assertSessionHasNoErrors();
+});
+
 test('the budget is optional but needs a currency when given', function () {
     $user = User::factory()->create();
     $date = now()->addWeek()->toDateString();
@@ -53,7 +62,7 @@ test('group fields are validated', function (array $payload, string $field) {
         ->assertSessionHasErrors($field);
 })->with([
     'missing name' => [['name' => ''], 'name'],
-    'past date' => [['event_date' => now()->subDay()->toDateString()], 'event_date'],
+    'past date' => [['event_date' => now()->subDays(2)->toDateString()], 'event_date'],
     'negative budget' => [['budget_max' => '-5', 'budget_currency' => 'BRL'], 'budget_max'],
     'three decimals' => [['budget_max' => '10.555', 'budget_currency' => 'BRL'], 'budget_max'],
     'unknown currency' => [['budget_max' => '10', 'budget_currency' => 'XYZ'], 'budget_currency'],

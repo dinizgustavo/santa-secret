@@ -1,5 +1,6 @@
 import { Form, router } from '@inertiajs/react';
 import { ArrowLeftRight, X } from 'lucide-react';
+import { useState } from 'react';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import {
@@ -69,6 +70,8 @@ export default function ExclusionsCard({
     exclusions,
 }: Props) {
     const { t } = useTranslation();
+    // Radix Select keeps its own value, so the form is remounted to clear both pickers.
+    const [formKey, setFormKey] = useState(0);
 
     return (
         <Card>
@@ -121,9 +124,10 @@ export default function ExclusionsCard({
                 )}
 
                 <Form
+                    key={formKey}
                     {...store.form(groupId)}
                     options={{ preserveScroll: true }}
-                    resetOnSuccess
+                    onSuccess={() => setFormKey((key) => key + 1)}
                     className="space-y-3"
                 >
                     {({ processing, errors }) => (
