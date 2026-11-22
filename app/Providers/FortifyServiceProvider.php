@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
+use App\Support\Auth\SignInOptions;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -51,6 +52,7 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::loginView(fn (Request $request) => Inertia::render('auth/login', [
             'canResetPassword' => Features::enabled(Features::resetPasswords()),
             'status' => $request->session()->get('status'),
+            'signInOptions' => SignInOptions::toArray(),
         ]));
 
         Fortify::resetPasswordView(fn (Request $request) => Inertia::render('auth/reset-password', [
@@ -65,6 +67,7 @@ class FortifyServiceProvider extends ServiceProvider
 
         Fortify::registerView(fn () => Inertia::render('auth/register', [
             'passwordRules' => Password::defaults()->toPasswordRulesString(),
+            'signInOptions' => SignInOptions::toArray(),
         ]));
 
         Fortify::confirmPasswordView(fn () => Inertia::render('auth/confirm-password'));
@@ -80,5 +83,16 @@ class FortifyServiceProvider extends ServiceProvider
 
             return Limit::perMinute(5)->by($throttleKey);
         });
+
+        // Sending codes costs e-mails: limit per address and per IP.
+        RateLimiter::for('login-code-send', fn (Request $request): array => [
+            Limit::perMinute(3)->by('email|'.$request->string('email')->lower()->toString()),
+            Limit::perHour(10)->by('ip|'.$request->ip()),
+        ]);
+
+        // Each code also has its own attempt counter; this caps guessing across codes.
+        RateLimiter::for('login-code-verify', fn (Request $request): Limit => Limit::perMinute(10)->by($request->session()->getId().'|'.$request->ip()));
+
+        RateLimiter::for('oauth', fn (Request $request): Limit => Limit::perMinute(20)->by($request->ip() ?? ''));
     }
 }

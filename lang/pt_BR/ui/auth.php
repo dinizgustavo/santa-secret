@@ -33,6 +33,26 @@ return [
         'description' => 'Digite sua nova senha abaixo',
         'submit' => 'Redefinir senha',
     ],
+    'options' => [
+        'google' => 'Continuar com o Google',
+        'login_code' => 'Receber um código por e-mail',
+        'or_password' => 'Ou use sua senha',
+    ],
+    'login_code' => [
+        'head' => 'Entrar com código',
+        'title' => 'Entrar com código',
+        'description' => 'Vamos enviar um código de :length dígitos para o seu e-mail. Sem senha.',
+        'submit' => 'Enviar código',
+        'back_to_login' => 'Voltar para o login',
+    ],
+    'login_code_verify' => [
+        'head' => 'Digite o código',
+        'title' => 'Confira seu e-mail',
+        'description' => 'Digite o código que enviamos para :email',
+        'submit' => 'Entrar',
+        'resend' => 'Enviar um novo código',
+        'other_email' => 'Usar outro e-mail',
+    ],
     'confirm_password' => [
         'head' => 'Confirmar senha',
         'title' => 'Confirmar senha',

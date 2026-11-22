@@ -125,6 +125,7 @@ test('only whitelisted user fields are shared with the frontend', function () {
                 'name' => $user->name,
                 'email' => $user->email,
                 'email_verified_at' => $user->email_verified_at?->toIso8601String(),
+                'has_password' => true,
             ]),
         );
 });

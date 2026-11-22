@@ -18,13 +18,14 @@ use Illuminate\Support\Carbon;
  * @property string $email
  * @property Locale|null $locale
  * @property Carbon|null $email_verified_at
- * @property string $password
+ * @property string|null $password null for Google / e-mail code only accounts
+ * @property string|null $google_id
  * @property string|null $remember_token
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
 #[Fillable(['name', 'email', 'password', 'locale'])]
-#[Hidden(['password', 'remember_token'])]
+#[Hidden(['password', 'google_id', 'remember_token'])]
 class User extends Authenticatable implements HasLocalePreference
 {
     /** @use HasFactory<UserFactory> */
@@ -36,6 +37,11 @@ class User extends Authenticatable implements HasLocalePreference
     public function preferredLocale(): ?string
     {
         return $this->locale?->value;
+    }
+
+    public function hasPassword(): bool
+    {
+        return $this->password !== null && $this->password !== '';
     }
 
     /**

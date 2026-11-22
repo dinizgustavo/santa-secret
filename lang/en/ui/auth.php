@@ -33,6 +33,26 @@ return [
         'description' => 'Please enter your new password below',
         'submit' => 'Reset password',
     ],
+    'options' => [
+        'google' => 'Continue with Google',
+        'login_code' => 'Email me a sign-in code',
+        'or_password' => 'Or use your password',
+    ],
+    'login_code' => [
+        'head' => 'Sign in with a code',
+        'title' => 'Sign in with a code',
+        'description' => 'We will email you a :length-digit code. No password needed.',
+        'submit' => 'Send code',
+        'back_to_login' => 'Back to log in',
+    ],
+    'login_code_verify' => [
+        'head' => 'Enter your code',
+        'title' => 'Check your email',
+        'description' => 'Enter the code we sent to :email',
+        'submit' => 'Sign in',
+        'resend' => 'Send a new code',
+        'other_email' => 'Use another email',
+    ],
     'confirm_password' => [
         'head' => 'Confirm password',
         'title' => 'Confirm password',

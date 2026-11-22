@@ -33,6 +33,26 @@ return [
         'description' => 'Introduce tu nueva contraseña',
         'submit' => 'Restablecer contraseña',
     ],
+    'options' => [
+        'google' => 'Continuar con Google',
+        'login_code' => 'Recibir un código por correo',
+        'or_password' => 'O usa tu contraseña',
+    ],
+    'login_code' => [
+        'head' => 'Entrar con código',
+        'title' => 'Entrar con código',
+        'description' => 'Te enviaremos un código de :length dígitos por correo. Sin contraseña.',
+        'submit' => 'Enviar código',
+        'back_to_login' => 'Volver a iniciar sesión',
+    ],
+    'login_code_verify' => [
+        'head' => 'Introduce el código',
+        'title' => 'Revisa tu correo',
+        'description' => 'Introduce el código que enviamos a :email',
+        'submit' => 'Entrar',
+        'resend' => 'Enviar un código nuevo',
+        'other_email' => 'Usar otro correo',
+    ],
     'confirm_password' => [
         'head' => 'Confirmar contraseña',
         'title' => 'Confirmar contraseña',

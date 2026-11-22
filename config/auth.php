@@ -114,4 +114,21 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Sign-in With an E-mailed Code
+    |--------------------------------------------------------------------------
+    |
+    | One-time codes need a real mailer. Leave LOGIN_CODE_ENABLED empty to turn
+    | the feature on automatically whenever MAIL_MAILER is not "log" or "array".
+    |
+    */
+
+    'login_code' => [
+        'enabled' => env('LOGIN_CODE_ENABLED'),
+        'length' => 6,
+        'ttl_minutes' => 10,
+        'max_attempts' => 5,
+    ],
+
 ];

@@ -1,4 +1,4 @@
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, usePage } from '@inertiajs/react';
 import { useRef } from 'react';
 import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
 import Heading from '@/components/heading';
@@ -18,6 +18,7 @@ export default function Security({ passwordRules }: Props) {
     const passwordInput = useRef<HTMLInputElement>(null);
     const currentPasswordInput = useRef<HTMLInputElement>(null);
     const { t } = useTranslation();
+    const hasPassword = usePage().props.auth.user?.has_password ?? true;
 
     return (
         <>
@@ -28,8 +29,16 @@ export default function Security({ passwordRules }: Props) {
             <div className="space-y-6">
                 <Heading
                     variant="small"
-                    title={t('settings.security.title')}
-                    description={t('settings.security.description')}
+                    title={t(
+                        hasPassword
+                            ? 'settings.security.title'
+                            : 'settings.security.set_title',
+                    )}
+                    description={t(
+                        hasPassword
+                            ? 'settings.security.description'
+                            : 'settings.security.set_description',
+                    )}
                 />
 
                 <Form
@@ -56,24 +65,28 @@ export default function Security({ passwordRules }: Props) {
                 >
                     {({ errors, processing }) => (
                         <>
-                            <div className="grid gap-2">
-                                <Label htmlFor="current_password">
-                                    {t('common.fields.current_password')}
-                                </Label>
+                            {hasPassword && (
+                                <div className="grid gap-2">
+                                    <Label htmlFor="current_password">
+                                        {t('common.fields.current_password')}
+                                    </Label>
 
-                                <PasswordInput
-                                    id="current_password"
-                                    ref={currentPasswordInput}
-                                    name="current_password"
-                                    className="mt-1 block w-full"
-                                    autoComplete="current-password"
-                                    placeholder={t(
-                                        'common.fields.current_password',
-                                    )}
-                                />
+                                    <PasswordInput
+                                        id="current_password"
+                                        ref={currentPasswordInput}
+                                        name="current_password"
+                                        className="mt-1 block w-full"
+                                        autoComplete="current-password"
+                                        placeholder={t(
+                                            'common.fields.current_password',
+                                        )}
+                                    />
 
-                                <InputError message={errors.current_password} />
-                            </div>
+                                    <InputError
+                                        message={errors.current_password}
+                                    />
+                                </div>
+                            )}
 
                             <div className="grid gap-2">
                                 <Label htmlFor="password">

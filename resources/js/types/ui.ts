@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import type { Replacements } from '@/lib/i18n';
 import type { BreadcrumbItem } from '@/types/navigation';
 import type { TranslationKey } from '@/types/translation-keys';
 
@@ -19,4 +20,6 @@ export type AuthLayoutProps = {
     name?: string;
     title?: TranslationKey;
     description?: TranslationKey;
+    /** Values for :placeholders in the description, set at runtime with setLayoutProps(). */
+    descriptionParams?: Replacements;
 };
